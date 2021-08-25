@@ -33,25 +33,22 @@ Fraction::Fraction(int a, int b = 1) {
     denominator = b;
 }
 Fraction Fraction::operator+(const Fraction &term) const {
-    Fraction ret;
-    if (denominator == term.denominator) {
-        ret.numerator = numerator + term.numerator;
-        ret.denominator = denominator;
-        return ret;
-    }
-    return {};
+    if (denominator == term.denominator)
+        return Fraction(numerator + term.numerator, denominator);
+
+    const auto lcm = std::lcm(denominator, term.denominator);
+
+    const auto expand_fraction = [&](Fraction f) -> int {
+        return f.numerator * (lcm / f.denominator);
+    };
+
+    return Fraction(expand_fraction(*this) + expand_fraction(term), lcm);
 }
 Fraction Fraction::operator-(const Fraction &subtrahend) const {
-    Fraction ret;
-    if (denominator == subtrahend.denominator) {
-        ret.numerator = numerator - subtrahend.numerator;
-        ret.denominator = denominator;
-        return ret;
-    }
-    return {};
+    return *this + (subtrahend * Fraction(-1));
 }
 Fraction Fraction::operator*(const Fraction &factor) const {
-    return {};
+    return Fraction(numerator * factor.numerator, denominator * factor.denominator);
 }
 Fraction Fraction::operator/(const Fraction &divider) const {
     return {};
